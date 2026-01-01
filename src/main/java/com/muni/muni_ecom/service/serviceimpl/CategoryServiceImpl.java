@@ -10,7 +10,8 @@ import java.util.List;
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-    private List<Category> categories = new ArrayList<>();
+    private final List<Category> categories = new ArrayList<>();
+    private Long nextID = 1L;
 
     @Override
     public List<Category> getAllCategories() {
@@ -19,6 +20,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void createCategory(Category category) {
+        category.setCategoryId(nextID++);
         categories.add(category);
     }
+
+    @Override
+    public String deleteCategory(Long categoryId) {
+        Category category = categories.stream()
+                .filter(c -> categoryId.equals(c.getCategoryId()))
+                .findFirst()
+                .orElse(null);
+
+        if (category == null) return "Category Not Found!";
+        categories.remove(category);
+        return "Category Deleted Successfully!";
+    }
 }
+
