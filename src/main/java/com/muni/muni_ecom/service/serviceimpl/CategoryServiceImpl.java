@@ -2,7 +2,9 @@ package com.muni.muni_ecom.service.serviceimpl;
 
 import com.muni.muni_ecom.model.Category;
 import com.muni.muni_ecom.service.CategoryService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +31,10 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categories.stream()
                 .filter(c -> categoryId.equals(c.getCategoryId()))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found."));
 
-        if (category == null) return "Category Not Found!";
         categories.remove(category);
-        return "Category Deleted Successfully!";
+        return "Category with id: " + categoryId + " deleted successfully!";
     }
 }
 
