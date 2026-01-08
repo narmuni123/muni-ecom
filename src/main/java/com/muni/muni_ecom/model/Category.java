@@ -2,20 +2,22 @@ package com.muni.muni_ecom.model;
 
 public class Category {
 
-    public Category(long categoryId, String categoryName) {
+    public Category() {}
+
+    public Category(Long categoryId, String categoryName) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
     }
 
-    private long categoryId;
+    private Long categoryId;
 
     private String categoryName;
 
-    public long getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(long categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 
