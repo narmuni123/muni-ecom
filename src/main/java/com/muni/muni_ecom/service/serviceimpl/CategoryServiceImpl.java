@@ -1,5 +1,8 @@
 package com.muni.muni_ecom.service.serviceimpl;
 
+import com.muni.muni_ecom.exception.ApiException;
+import com.muni.muni_ecom.exception.EmptyResourceException;
+import com.muni.muni_ecom.exception.ResourceNotFoundException;
 import com.muni.muni_ecom.model.Category;
 import com.muni.muni_ecom.repository.CategoryRepository;
 import com.muni.muni_ecom.service.CategoryService;
@@ -18,18 +21,21 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+        List<Category> savedCategories = categoryRepository.findAll();
+        if(savedCategories.isEmpty()) throw new EmptyResourceException("No categories exist.");
+        return savedCategories;
     }
 
     @Override
     public void createCategory(Category category) {
+        Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
+        if(savedCategory != null) throw new ApiException("Category with the name " + category.getCategoryName() + " already exists.");
         categoryRepository.save(category);
     }
 
     @Override
     public String deleteCategory(Long categoryId) {
-
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found."));
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
         categoryRepository.delete(category);
         return "Category with id: " + categoryId + " deleted successfully!";
     }
@@ -37,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public String updateCategory(Long categoryId, Category updatedCategory) {
 
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found."));
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
 
         category.setCategoryName(updatedCategory.getCategoryName());
 
