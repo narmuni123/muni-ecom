@@ -4,13 +4,17 @@ import com.muni.muni_ecom.exception.ApiException;
 import com.muni.muni_ecom.exception.EmptyResourceException;
 import com.muni.muni_ecom.exception.ResourceNotFoundException;
 import com.muni.muni_ecom.model.Category;
+import com.muni.muni_ecom.payload.CategoryDTO;
+import com.muni.muni_ecom.payload.CategoryResponse;
 import com.muni.muni_ecom.repository.CategoryRepository;
 import com.muni.muni_ecom.service.CategoryService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -19,11 +23,20 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
-    public List<Category> getAllCategories() {
+    public CategoryResponse getAllCategories() {
         List<Category> savedCategories = categoryRepository.findAll();
         if(savedCategories.isEmpty()) throw new EmptyResourceException("No categories exist.");
-        return savedCategories;
+
+        List<CategoryDTO> categoryDTOS = savedCategories.stream()
+                .map(category -> modelMapper.map(savedCategories, CategoryDTO.class)).toList();
+
+        CategoryResponse categoryResponse = new CategoryResponse();
+        categoryResponse.setContent(categoryDTOS);
+        return categoryResponse;
     }
 
     @Override
